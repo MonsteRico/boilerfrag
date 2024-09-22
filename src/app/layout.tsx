@@ -23,10 +23,10 @@ export default async function RootLayout({
       <Providers>
         <Toaster position="top-center" reverseOrder={false} />
         <body>
-          <div className="flex flex-row items-center justify-center">
+          <div className="flex flex-row items-center justify-center bg-accent py-4 mb-4">
             {session ? <UserButton session={session} /> : <LoginButton />}
           </div>
-          {children}
+          <div className="mx-2">{children}</div>
         </body>
       </Providers>
     </html>

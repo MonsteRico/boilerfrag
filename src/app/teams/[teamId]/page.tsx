@@ -81,7 +81,7 @@ console.log(team);
             )}
           </div>
         ))}
-        <AddMembers joinId={team.joinId} />
+        {isCaptain && <AddMembers joinId={team.joinId} />}
       </div>
     </main>
   );

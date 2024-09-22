@@ -50,29 +50,41 @@ export default async function TeamsPage() {
 
   return (
     <main className="">
-      <DrawerDialog>
-        <DrawerDialogTrigger asChild>
-          <Button>Create a new team/group</Button>
-        </DrawerDialogTrigger>
-        <DrawerDialogContent>
-          <CreateTeamForm games={games} />
-        </DrawerDialogContent>
-      </DrawerDialog>
-      <div>
-        <h2>My Teams</h2>
-        {myTeams.map((team) => (
-          <div key={team.id}>
-            <Link href={`/teams/${team.id}`}>{team.name}</Link>
-          </div>
-        ))}
+      <div className="flex flex-row justify-between">
+        <div className="flex flex-col gap-2">
+          <h2 className="text-2xl underline">My Teams</h2>
+          {myTeams.map((team) => (
+            <div key={team.id}>
+              <Link href={`/teams/${team.id}`}>{team.name}</Link>
+            </div>
+          ))}
+          {myTeams.length === 0 && (
+            <div className="">
+              You have no teams yet. Create one or ask to join one!
+            </div>
+          )}
+        </div>
+        <DrawerDialog>
+          <DrawerDialogTrigger asChild>
+            <Button>Create a new team/group</Button>
+          </DrawerDialogTrigger>
+          <DrawerDialogContent>
+            <CreateTeamForm games={games} />
+          </DrawerDialogContent>
+        </DrawerDialog>
       </div>
-      <div>
-        <h2>Teams I'm In</h2>
+      <div className="flex flex-col gap-2">
+        <h2 className="text-2xl underline">Teams I'm In</h2>
         {teamsIn.map((team) => (
           <div key={team.id}>
             <Link href={`/teams/${team.id}`}>{team.name}</Link>
           </div>
         ))}
+        {teamsIn.length === 0 && (
+          <div className="">
+            You have no teams yet. Create one or ask to join one!
+          </div>
+        )}
       </div>
     </main>
   );
