@@ -44,7 +44,7 @@ console.log(team);
     <main className="">
       <div className="flex flex-row gap-2">
         <h1 className="text-2xl">{team.name}</h1>
-        <EditTeamName name={team.name} teamId={teamId} />
+        {isCaptain && <EditTeamName name={team.name} teamId={teamId} />}
         {isCaptain && <DeleteTeam team={team} />}
         {!isCaptain && <LeaveTeam team={team} />}
       </div>
