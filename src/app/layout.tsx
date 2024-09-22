@@ -1,7 +1,12 @@
+import {LoginButton} from "@/components/login-logout";
+import Providers from "@/components/providers";
+import UserButton from "@/components/user-button";
+import { getServerAuthSession } from "@/server/auth";
 import "@/styles/globals.css";
 
 import { GeistSans } from "geist/font/sans";
 import { type Metadata } from "next";
+import { Toaster } from "react-hot-toast";
 
 export const metadata: Metadata = {
   title: "Create T3 App",
@@ -9,12 +14,21 @@ export const metadata: Metadata = {
   icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const session = await getServerAuthSession();
   return (
     <html lang="en" className={`${GeistSans.variable}`}>
-      <body>{children}</body>
+      <Providers>
+        <Toaster position="top-center" reverseOrder={false} />
+        <body>
+          <div className="flex flex-row items-center justify-center">
+            {session ? <UserButton session={session} /> : <LoginButton />}
+          </div>
+          {children}
+        </body>
+      </Providers>
     </html>
   );
 }
