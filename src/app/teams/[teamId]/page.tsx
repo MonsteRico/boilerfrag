@@ -1,15 +1,12 @@
 import { Button } from "@/components/ui/button";
-import { getTeam } from "@/server/actions/getTeam";
+import { getTeam } from "@/server/actions/teams/getTeam";
 import { getServerAuthSession } from "@/server/auth";
 import { db } from "@/server/db";
-import { teams, teamsToUsers, users } from "@/server/db/schema";
-import { and, eq, sql } from "drizzle-orm";
+import { teamsToUsers } from "@/server/db/schema";
+import { and, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
-import Link from "next/link";
-import toast from "react-hot-toast";
 import EditTeamName from "./(components)/edit-team-name";
 import AddMembers from "./(components)/add-members";
-import { Delete } from "lucide-react";
 import DeleteTeam from "./(components)/delete-team";
 import LeaveTeam from "./(components)/leave-team";
 

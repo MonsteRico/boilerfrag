@@ -1,7 +1,7 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { Team } from "@/lib/utils";
-import { deleteTeam } from "@/server/actions/deleteTeam";
+import { deleteTeam } from "@/server/actions/teams/deleteTeam";
 import { Trash } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";

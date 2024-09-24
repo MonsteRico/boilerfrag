@@ -1,9 +1,9 @@
 "use server";
 
 import { and, eq } from "drizzle-orm";
-import { getServerAuthSession } from "../auth";
-import { db } from "../db";
-import { teams, teamsToUsers } from "../db/schema";
+import { getServerAuthSession } from "../../auth";
+import { db } from "../../db";
+import { teams, teamsToUsers } from "../../db/schema";
 
 export async function leaveTeam(teamId: string) {
   const session = await getServerAuthSession();

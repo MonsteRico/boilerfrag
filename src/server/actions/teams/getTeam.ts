@@ -1,14 +1,13 @@
 "use server";
 
 import { eq } from "drizzle-orm";
-import { getServerAuthSession } from "../auth";
-import { db } from "../db";
-import { teams, teamsToUsers, users } from "../db/schema";
+import { db } from "../../db";
+import { teams, teamsToUsers, users } from "../../db/schema";
 
 export async function getTeam(teamId: string) {
   const [team] = await db.select().from(teams).where(eq(teams.id, teamId));
   if (!team) throw new Error("Team not found");
-  const captainId = team.captainId
+  const captainId = team.captainId;
   const teamMembersRows = await db
     .select()
     .from(teamsToUsers)

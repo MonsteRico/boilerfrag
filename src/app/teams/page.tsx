@@ -5,15 +5,7 @@ import {
   DrawerDialogTrigger,
 } from "@/components/responsiveDrawerPopover";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { getTeam } from "@/server/actions/getTeam";
+import { getTeam } from "@/server/actions/teams/getTeam";
 import { getServerAuthSession } from "@/server/auth";
 import { db } from "@/server/db";
 import { teams, teamsToUsers } from "@/server/db/schema";

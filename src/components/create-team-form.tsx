@@ -8,13 +8,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import Link from "next/link";
 import { Button } from "./ui/button";
-import { Game } from "@/server/db/schema";
+import { type Game } from "@/server/db/schema";
 import { useSession } from "next-auth/react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
-import { createTeam } from "@/server/actions/createTeam";
+import { createTeam } from "@/server/actions/teams/createTeam";
 import { Label } from "./ui/label";
 
 function CreateTeamForm({ games }: { games: Game[] }) {
@@ -73,7 +72,7 @@ function CreateTeamForm({ games }: { games: Game[] }) {
           <Button onClick={handleSubmit}>Create</Button>
         </div>
         <div className="w-1/2">
-          {game && game.coverArt && (
+          {game?.coverArt && (
             <img src={game.coverArt} alt={game.fullName} />
           )}
         </div>

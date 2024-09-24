@@ -1,9 +1,8 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { Team } from "@/lib/utils";
-import { deleteTeam } from "@/server/actions/deleteTeam";
-import { leaveTeam } from "@/server/actions/leaveTeam";
-import { LogOut, Trash } from "lucide-react";
+import type { Team } from "@/lib/utils";
+import { leaveTeam } from "@/server/actions/teams/leaveTeam";
+import { LogOut } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import React from "react";

@@ -26,7 +26,7 @@ export const games = createTable("game", {
   id: uuid("id").primaryKey().defaultRandom(),
   fullName: varchar("name", { length: 256 }).notNull(),
   shortName: varchar("short_name", { length: 256 }).notNull(),
-  coverArt: varchar("cover_art", { length: 256 }),
+  coverArt: varchar("cover_art", { length: 256 }).notNull(),
   createdAt: timestamp("created_at", { withTimezone: true })
     .default(sql`CURRENT_TIMESTAMP`)
     .notNull(),
@@ -77,16 +77,35 @@ export const teamsRelations = relations(teams, ({ many, one }) => ({
   }),
 }));
 
+export const usersToBrackets = createTable("users_to_brackets", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: varchar("user_id", { length: 255 })
+    .notNull()
+    .references(() => users.id),
+  bracketId: uuid("bracket_id")
+    .notNull()
+    .references(() => brackets.id),
+});
+
+export const usersToBracketsRelations = relations(usersToBrackets, ({ one }) => ({
+  user: one(users, { fields: [usersToBrackets.userId], references: [users.id] }),
+  bracket: one(brackets, { fields: [usersToBrackets.bracketId], references: [brackets.id] }),
+}));
+
+export const bracketStagesEnum = pgEnum("bracket_stage", ["REGISTRATION", "MAKING_TEAMS", "EDIT_TEAMS", "SET_SEEDS", "RUNNING", "FINISHED"]);
+
 export const brackets = createTable("bracket", {
   id: uuid("id").primaryKey().defaultRandom(),
   gameId: uuid("game_id"),
+  name: text("name").notNull(),
+  stage: bracketStagesEnum("stage").notNull().default("REGISTRATION"),
   format: text("format").notNull(), // e.g., "single_elimination", "double_elimination"
   individualAndGroupSignup: boolean("individual_and_group_signup").notNull(), // whether the bracket is individual/group signup vs team signup
   maxTeamSize: integer("max_team_size").notNull(), // Maximum number of players per team (0 for no limit)
   maxGroupSize: integer("max_group_size").notNull(), // Maximum number of players per group (0 for no limit)
   maxPlayerCount: integer("max_player_count").notNull(), // Maximum number of players in the bracket
   maxTeamCount: integer("max_team_count").notNull(), // Maximum number of teams in the bracket
-  rounds: integer("rounds").notNull(), // Total number of rounds in the bracket
+  rounds: integer("rounds"), // Total number of rounds in the bracket
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).$onUpdate(
     () => new Date(),
@@ -99,6 +118,7 @@ export type CreateBracket = typeof brackets.$inferInsert;
 export const bracketsRelations = relations(brackets, ({ one, many }) => ({
   game: one(games, { fields: [brackets.gameId], references: [games.id] }),
   teams: many(teams),
+  users: many(usersToBrackets),
 }));
 
 export const matchStatesEnum = pgEnum("match_state", [
@@ -130,7 +150,7 @@ export const matches = createTable("match", {
 export type Match = typeof matches.$inferSelect;
 export type CreateMatch = typeof matches.$inferInsert;
 
-export const roleEnum = pgEnum("role", ["captain", "player", "admin"]);
+export const roleEnum = pgEnum("role", ["player", "admin", "super_admin"]);
 
 export const users = createTable("user", {
   id: varchar("id", { length: 255 })
@@ -144,12 +164,13 @@ export const users = createTable("user", {
     withTimezone: true,
   }).default(sql`CURRENT_TIMESTAMP`),
   image: varchar("image", { length: 255 }),
-  role: roleEnum("role"),
+  role: roleEnum("role").default("player"),
 });
 
 export const usersRelations = relations(users, ({ many }) => ({
   accounts: many(accounts),
   teamsToUsers: many(teamsToUsers),
+  bracketsToUsers: many(usersToBrackets),
 }));
 
 export const teamsToUsers = createTable("teams_to_users", {

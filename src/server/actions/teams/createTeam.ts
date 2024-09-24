@@ -1,8 +1,8 @@
 "use server";
 
-import { getServerAuthSession } from "../auth";
-import { db } from "../db";
-import { teams, teamsToUsers } from "../db/schema";
+import { getServerAuthSession } from "../../auth";
+import { db } from "../../db";
+import { teams, teamsToUsers } from "../../db/schema";
 
 export async function createTeam(name: string, gameId: string) {
   const session = await getServerAuthSession();

@@ -1,9 +1,9 @@
 "use server";
 
 import { eq } from "drizzle-orm";
-import { getServerAuthSession } from "../auth";
-import { db } from "../db";
-import { teams } from "../db/schema";
+import { getServerAuthSession } from "../../auth";
+import { db } from "../../db";
+import { teams } from "../../db/schema";
 import { revalidatePath } from "next/cache";
 
 export async function updateTeamName(teamId: string, name: string) {

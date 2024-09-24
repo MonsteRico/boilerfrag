@@ -7,9 +7,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { updateTeamName } from "@/server/actions/updateTeamName";
+import { updateTeamName } from "@/server/actions/teams/updateTeamName";
 import { Pencil } from "lucide-react";
-import { revalidatePath } from "next/cache";
 import React from "react";
 import toast from "react-hot-toast";
 

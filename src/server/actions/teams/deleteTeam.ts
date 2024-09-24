@@ -1,11 +1,10 @@
 "use server";
 
 import { eq } from "drizzle-orm";
-import { getServerAuthSession } from "../auth";
-import { db } from "../db";
-import { teams, teamsToUsers } from "../db/schema";
+import { getServerAuthSession } from "../../auth";
+import { db } from "../../db";
+import { teams, teamsToUsers } from "../../db/schema";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/dist/server/api-utils";
 
 export async function deleteTeam(teamId: string) {
   const session = await getServerAuthSession();
