@@ -1,4 +1,4 @@
-import {LoginButton} from "@/components/login-logout";
+import { LoginButton } from "@/components/login-logout";
 import Providers from "@/components/providers";
 import UserButton from "@/components/user-button";
 import { getServerAuthSession } from "@/server/auth";
@@ -21,9 +21,10 @@ export default async function RootLayout({
   return (
     <html lang="en" className={`${GeistSans.variable}`}>
       <Providers>
-        <Toaster position="top-center" reverseOrder={false} />
         <body>
-          <div className="flex flex-row items-center justify-center bg-accent py-4 mb-4">
+          <Toaster position="top-center" reverseOrder={false} />
+
+          <div className="mb-4 flex flex-row items-center justify-center bg-accent py-4">
             {session ? <UserButton session={session} /> : <LoginButton />}
           </div>
           <div className="mx-2">{children}</div>

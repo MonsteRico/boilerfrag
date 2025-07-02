@@ -38,59 +38,6 @@ export const games = createTable("game", {
 
 export type Game = typeof games.$inferSelect;
 
-export const teams = createTable(
-  "team",
-  {
-    id: uuid("id").primaryKey().defaultRandom(),
-    name: varchar("name", { length: 256 }).notNull(),
-    captainId: varchar("captain_id", { length: 255 })
-      .notNull()
-      .references(() => users.id),
-    createdAt: timestamp("created_at", { withTimezone: true })
-      .default(sql`CURRENT_TIMESTAMP`)
-      .notNull(),
-    updatedAt: timestamp("updated_at", { withTimezone: true }).$onUpdate(
-      () => new Date(),
-    ),
-    gameId: uuid("game_id")
-      .notNull()
-      .references(() => games.id),
-    joinId: uuid("join_id").defaultRandom().notNull(),
-    bracketId: uuid("bracket_id").references(() => brackets.id),
-  },
-  (example) => ({
-    captainIdIdx: index("created_by_idx").on(example.captainId),
-    nameIndex: index("name_idx").on(example.name),
-    gameIndex: index("game_idx").on(example.gameId),
-  }),
-);
-
-export type CreateTeam = typeof teams.$inferInsert;
-
-export const teamsRelations = relations(teams, ({ many, one }) => ({
-  users: many(teamsToUsers),
-  captain: one(users, { fields: [teams.captainId], references: [users.id] }),
-  game: one(games, { fields: [teams.gameId], references: [games.id] }),
-  bracket: one(brackets, {
-    fields: [teams.bracketId],
-    references: [brackets.id],
-  }),
-}));
-
-export const usersToBrackets = createTable("users_to_brackets", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  userId: varchar("user_id", { length: 255 })
-    .notNull()
-    .references(() => users.id),
-  bracketId: uuid("bracket_id")
-    .notNull()
-    .references(() => brackets.id),
-});
-
-export const usersToBracketsRelations = relations(usersToBrackets, ({ one }) => ({
-  user: one(users, { fields: [usersToBrackets.userId], references: [users.id] }),
-  bracket: one(brackets, { fields: [usersToBrackets.bracketId], references: [brackets.id] }),
-}));
 
 export const bracketStagesEnum = pgEnum("bracket_stage", ["REGISTRATION", "MAKING_TEAMS", "EDIT_TEAMS", "SET_SEEDS", "RUNNING", "FINISHED"]);
 
@@ -100,7 +47,6 @@ export const brackets = createTable("bracket", {
   name: text("name").notNull(),
   stage: bracketStagesEnum("stage").notNull().default("REGISTRATION"),
   format: text("format").notNull(), // e.g., "single_elimination", "double_elimination"
-  individualAndGroupSignup: boolean("individual_and_group_signup").notNull(), // whether the bracket is individual/group signup vs team signup
   maxTeamSize: integer("max_team_size").notNull(), // Maximum number of players per team (0 for no limit)
   maxGroupSize: integer("max_group_size").notNull(), // Maximum number of players per group (0 for no limit)
   maxPlayerCount: integer("max_player_count").notNull(), // Maximum number of players in the bracket
@@ -117,8 +63,35 @@ export type CreateBracket = typeof brackets.$inferInsert;
 
 export const bracketsRelations = relations(brackets, ({ one, many }) => ({
   game: one(games, { fields: [brackets.gameId], references: [games.id] }),
-  teams: many(teams),
-  users: many(usersToBrackets),
+  bracketEntries: many(bracketEntries),
+}));
+
+
+export const bracketEntries = createTable("bracket_entries", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  bracketId: uuid("bracket_id").notNull().references(() => brackets.id),
+  entryCode: varchar("entry_code", { length: 8 }).notNull().unique(),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
+});
+
+export type BracketEntry = typeof bracketEntries.$inferSelect;
+export type CreateBracketEntry = typeof bracketEntries.$inferInsert;
+
+export const usersToBracketEntries = createTable("users_to_bracket_entries", {
+  userId: varchar("user_id", { length: 255 }).notNull().references(() => users.id),
+  bracketEntryId: uuid("bracket_entry_id").notNull().references(() => bracketEntries.id),
+}, (t) => ({
+  pk: primaryKey({ columns: [t.userId, t.bracketEntryId] }),
+}));
+
+export const bracketEntriesRelations = relations(bracketEntries, ({ one, many }) => ({
+  bracket: one(brackets, { fields: [bracketEntries.bracketId], references: [brackets.id] }),
+  users: many(usersToBracketEntries),
+}));
+
+export const usersToBracketEntriesRelations = relations(usersToBracketEntries, ({ one }) => ({
+  user: one(users, { fields: [usersToBracketEntries.userId], references: [users.id] }),
+  bracketEntry: one(bracketEntries, { fields: [usersToBracketEntries.bracketEntryId], references: [bracketEntries.id] }),
 }));
 
 export const matchStatesEnum = pgEnum("match_state", [
@@ -169,23 +142,9 @@ export const users = createTable("user", {
 
 export const usersRelations = relations(users, ({ many }) => ({
   accounts: many(accounts),
-  teamsToUsers: many(teamsToUsers),
-  bracketsToUsers: many(usersToBrackets),
+  bracketEntries: many(usersToBracketEntries),
 }));
 
-export const teamsToUsers = createTable("teams_to_users", {
-  teamId: uuid("team_id")
-    .notNull()
-    .references(() => teams.id),
-  userId: varchar("user_id", { length: 255 })
-    .notNull()
-    .references(() => users.id),
-});
-
-export const teamsToUsersRelations = relations(teamsToUsers, ({ one }) => ({
-  team: one(teams, { fields: [teamsToUsers.teamId], references: [teams.id] }),
-  user: one(users, { fields: [teamsToUsers.userId], references: [users.id] }),
-}));
 
 export const accounts = createTable(
   "account",
